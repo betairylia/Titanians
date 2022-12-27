@@ -9,23 +9,23 @@
   <link rel="icon" href="img/favicon.png">
   <meta name="theme-color" content="">
 
-  <script src="js/require.js"></script>
-  <script src="js/gameMain.js"></script>
+  <!-- <script src="js/lib/require.js"></script> -->
 
   <script>
-      require.config({
-          paths: {
-              "game": "js/gameMain",
-              // "typescript-collections": "js/umd",
-              // "Phaser": 'js/phaser',
-          },
+    //   require.config({
+    //       paths: {
+    //           "game": "js/gameMain",
+    //           "typescript-collections": "js/lib/umd",
+    //           "miniplex": "js/lib/miniplex-core.cjs.prod",
+    //           // "Phaser": 'js/phaser',
+    //       },
 
-          // deps: ["Phaser", "typescript-collections"]
-      });
+    //       // deps: ["Phaser", "typescript-collections"]
+    //   });
 
-      window.onload = () => {
-          require(["game"]);
-      }
+    //   window.onload = () => {
+    //       require(["game"]);
+    //   }
   </script>
 
 </head>
@@ -34,6 +34,7 @@
   (which contains tsconfig.json)
 -->
 <body>
+  <script type="module" src="./js/game.js"></script>
   <h1>Titanians v0.01</h1>
   野果: <span id="nFruits">0</span>
   <button id="bFruits">收集一些野果</button>

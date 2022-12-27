@@ -1,3 +1,5 @@
+import { Town } from "./town";
+
 export class Game
 {
     n: number = 0;
@@ -7,24 +9,21 @@ export class Game
     private _lastTick: number = 0;
     private tickTimeMS: number = 100; // 0.1s = 1 tick
 
+    private town: Town;
+
     constructor()
     {
-
+        this.town = new Town();
     }
 
     public Init()
     {
-        let message: string = 'Hello, TypeScript!';
-
-        let heading = document.createElement('h1');
-        heading.textContent = message;
-
-        document.body.appendChild(heading);
         this.e = document.querySelector("#nFruits");
         let b:HTMLButtonElement = document.querySelector("#bFruits");
         b.onclick = (event) => { this.n += 1 };
 
         // this._lastTimestamp = Date.now();
+        this.town.Init();
         this._lastTick = Date.now();
         window.requestAnimationFrame(() => this.Update());
     }
@@ -39,6 +38,8 @@ export class Game
 
             this.n += 1;
             this.e.innerHTML = this.n.toFixed(2);
+
+            this.town.Update();
         }
 
         window.requestAnimationFrame(() => this.Update());
