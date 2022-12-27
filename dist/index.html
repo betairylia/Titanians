@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Hello, world!</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="" />
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <link rel="icon" href="img/favicon.png">
+  <meta name="theme-color" content="">
+
+  <!-- <script src="js/lib/require.js"></script> -->
+
+  <script>
+    //   require.config({
+    //       paths: {
+    //           "game": "js/gameMain",
+    //           "typescript-collections": "js/lib/umd",
+    //           "miniplex": "js/lib/miniplex-core.cjs.prod",
+    //           // "Phaser": 'js/phaser',
+    //       },
+
+    //       // deps: ["Phaser", "typescript-collections"]
+    //   });
+
+    //   window.onload = () => {
+    //       require(["game"]);
+    //   }
+  </script>
+
+</head>
+<!-- 
+  To start, type `tsc` in console at root for watch + compile.
+  (which contains tsconfig.json)
+-->
+<body>
+  <!-- <script type="module" src="./js/game.js"></script> -->
+  <script type="module" src="bundle.js"></script>
+  <h1>Titanians v0.01</h1>
+  野果: <span id="nFruits">0</span>
+  <button id="bFruits">收集一些野果</button>
+</body>
+</html>
