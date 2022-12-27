@@ -7,7 +7,7 @@ export class Game
 
     private _lastTimestamp: number = 0;
     private _lastTick: number = 0;
-    private tickTimeMS: number = 100; // 0.1s = 1 tick
+    private tickTimeMS: number = 250; // 1 tick time in ms
 
     private town: Town;
 
@@ -18,9 +18,9 @@ export class Game
 
     public Init()
     {
-        this.e = document.querySelector("#nFruits");
-        let b:HTMLButtonElement = document.querySelector("#bFruits");
-        b.onclick = (event) => { this.n += 1 };
+        // this.e = document.querySelector("#nFruits");
+        // let b:HTMLButtonElement = document.querySelector("#bFruits");
+        // b.onclick = (event) => { this.n += 1 };
 
         // this._lastTimestamp = Date.now();
         this.town.Init();
@@ -36,8 +36,8 @@ export class Game
             // Update per tick
             this._lastTick = Date.now() - (deltaTickTime - this.tickTimeMS);
 
-            this.n += 1;
-            this.e.innerHTML = this.n.toFixed(2);
+            // this.n += 1;
+            // this.e.innerHTML = this.n.toFixed(2);
 
             this.town.Update();
         }

@@ -1,0 +1,20 @@
+* {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 12pt;
+    font-weight: normal;
+}
+
+h1, h2, h3 {
+    font-weight: normal;
+}
+
+h1{
+    font-size: 16pt;
+    margin: 0.5em 0em;
+    text-align: center;
+}
+
+h2{
+    font-size: 14pt;
+    margin: 0.5em 0em;
+}
