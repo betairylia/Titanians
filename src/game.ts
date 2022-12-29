@@ -39,7 +39,7 @@ export class Game
             // this.n += 1;
             // this.e.innerHTML = this.n.toFixed(2);
 
-            this.town.Update();
+            this.town.Tick();
         }
 
         window.requestAnimationFrame(() => this.Update());

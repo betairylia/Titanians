@@ -9,4 +9,7 @@ export type Entity =
   & Resource
   & Building
   & Activity
-  & { id: string }
+  & {
+        id: string,
+        visible?: true
+    }

@@ -7,8 +7,8 @@ export type Activity =
 {
     isActivity?: true,
     activated?: true,
-    AddResource?: {
-        id: string,
+    AddResourceOnce?: {
+        type: ResourceType,
         amount: number
     }
 }
@@ -31,14 +31,25 @@ export function AddActivityEntry(
     return world.add(entity);
 }
 
-export const activities = {
-    GatherFruit: {
-        id: "aGatherFruit",
-        AddResource: { id: "rFruit", amount: 1.0 },
-    } 
-} satisfies Record<string, Entity>
+function AddResourceOnce(act: Entity, town: Town)
+{
+    if (act.hasOwnProperty("AddResourceOnce"))
+    {
+        town.resources.AddResource(act.AddResourceOnce.type, act.AddResourceOnce.amount);
+    }
+}
 
 export function HandleActivity(act: Entity, town: Town)
 {
     console.log(act);
+    AddResourceOnce(act, town);
+
+    town.UpdateUI();
 }
+
+export const activities = {
+    GatherFruit: {
+        id: "aGatherFruit",
+        AddResourceOnce: { type: ResourceType.Fruit, amount: 1.0 },
+    } 
+} satisfies Record<string, Entity>
