@@ -11,5 +11,8 @@ export type Entity =
   & Activity
   & {
         id: string,
-        visible?: true
+      
+        displayName?: string,
+        HTMLElement?: { elem: HTMLElement, prevDisplay: string },
+        hidden?: true
     }

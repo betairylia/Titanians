@@ -37,10 +37,48 @@
   <!-- <script type="module" src="./js/game.js"></script> -->
   <script type="module" src="bundle.js"></script>
   <h1>Titanians v0.01</h1>
+  <h2>Prototyping</h2>
+  <div class="bigPanel horizonalFlex">
+    <span class="leftColumn"><p>Time</p></span>
+    <span class="rightColumn">
+      <button id="time1x" style="margin-right: 0.5em;">1x</button>
+      <button id="time10x" style="margin-right: 0.5em;">10x</button>
+      <p id="timeScale" style="margin-right: 0.5em;">1x</p>
+      <input type="range" min="0.5" max="10" value="1.0" step="0.1" class="slider" id="timeSlider">
+    </span>
+  </div>
   <!-- 野果: <span id="nFruits">0</span>
   <button id="bFruits">收集一些野果</button> -->
+  <hr/>
   <h2>Resources</h2>
-  <div id="resources"></div>
+  <div id="resources">
+    <template>
+      <div class="horizonalFlex">
+        <span  class="leftColumn">
+          <p id="name">野果</p>
+        </span>
+        <span class="rightColumn">
+          <p id="stack" style="width: 40%;">155 / 10000</p>
+          <p id="regen">+1.15 / tick</p>
+        </span>
+      </div>
+    </template>
+  </div>
+  <hr/>
+  <h2>Buildings</h2>
+  <div id="buildings" class="bigPanel">
+    <template>
+      <div class="buildingInfo horizonalFlex">
+        <span  class="leftColumn">
+          <p id="name">种植园</p>
+        </span>
+        <span class="rightColumn">
+          <button id="construct">+</button>
+          <p id="count">5</p>
+        </span>
+      </div>
+    </template>
+  </div>
   <hr/>
   <h2>Activities</h2>
   <div id="activities"></div>

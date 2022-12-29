@@ -16,6 +16,7 @@ let strings:Record<string, i18nDictionary> = {
         rFruit: "野果",
         
         bPlantation: "种植园",
+        bFarm: "农场",
         
         aGatherFruit: "收集一些野果",
     }
@@ -23,7 +24,7 @@ let strings:Record<string, i18nDictionary> = {
 
 function getStrings(key: string): string
 {
-    return strings[getCustomInterfaceLanguage()][key];
+    return strings[getCustomInterfaceLanguage()][key] || key;
 }
 
 export {strings, getStrings};

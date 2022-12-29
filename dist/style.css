@@ -8,6 +8,14 @@ body {
     margin: 1em;
 }
 
+span{
+    margin: 0;
+}
+
+p{
+    margin: 0;
+}
+
 h1, h2, h3 {
     font-weight: normal;
 }
@@ -21,4 +29,34 @@ h1{
 h2{
     font-size: 14pt;
     margin: 0.5em 0em;
+}
+
+div.bigPanel{
+    width: 100%;
+}
+
+div.buildingInfo{
+    height: 2em;
+}
+
+div.horizonalFlex{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.leftColumn{
+    flex-grow: 0;
+    width:15%;
+    min-width: 120px;
+    align-items: center;
+}
+
+.rightColumn{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.2em;
 }
