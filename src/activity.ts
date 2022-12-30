@@ -83,7 +83,7 @@ function UseResourceOnce(act: Entity, town: Town)
         for (const line of act.UseResourceOnce)
         {
             // If no enough resources, abort this action
-            if (town.resources.GetResource(line.type).resourceInfo.current < line.amount) { return false; }
+            if (town.resources.GetResource(line.type).current < line.amount) { return false; }
         }
     }
 

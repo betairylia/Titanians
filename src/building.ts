@@ -19,6 +19,7 @@ export type Building = {
 export const BuildingTypesDef = {
     Plantation: {},
     Farm: {},
+    LoggingCamp: {},
 }
 export type BuildingType = keyof typeof BuildingTypesDef;
 
@@ -77,7 +78,8 @@ export class BuildingHelper
 
     public GetBuildingCost(type: BuildingType): {type: ResourceType, amount: number}[]
     {
-        return [{ type: "Tree", amount: 10 }];
+        return [];
+        // return [{ type: "Wood", amount: 5 }];
     }
 
     public IsBuildingUnlocked(type: BuildingType): boolean
@@ -99,8 +101,8 @@ export class BuildingHelper
             // Handle requirements
             for (const line of entity.ChangeResourcePerTick.requires)
             {
-                let result = this.town.resources.AddResource(line.type, line.amount);
-                if (result < 1) { shouldBreak = true; break; }
+                let result = this.town.resources.AddResource(line.type, -line.amount);
+                if (result < (1 - 1e-7)) { shouldBreak = true; break; }
             }
 
             if (shouldBreak) { break; }
@@ -109,7 +111,7 @@ export class BuildingHelper
             for (const line of entity.ChangeResourcePerTick.products)
             {
                 let result = this.town.resources.AddResource(line.type, line.amount);
-                if (result < 1) { shouldBreak = true; }
+                if (result < (1 - 1e-7)) { shouldBreak = true; }
             }
          
             if (shouldBreak) { break; }
@@ -131,6 +133,14 @@ export class BuildingHelper
         "Farm": {
             id: "bFarm",
             Farm: {}
+        },
+        "LoggingCamp": {
+            id: "bLoggingCamp",
+            ChangeResourcePerTick: {
+                requires: [{ type: "Oak", amount: 0.02 }],
+                products: [{ type: "Wood", amount: 0.15 }]
+            },
+            LoggingCamp: {},
         }
     }
 }

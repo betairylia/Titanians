@@ -23,7 +23,10 @@ export interface ResourceData
     initialMaxStacks: number,
     regenBase: number,
     regenFactor: number,
-    color: string
+    color: string,
+    initialUMaxStacks: number,
+    initialUTransferSpeed: number,
+    env: boolean,
 }
 
 function ds(s: string, def: string)
@@ -49,7 +52,10 @@ export function LoadAllData(town: Town)
                         initialMaxStacks: Number(ds(line.initialMaxStacks, '0')),
                         regenBase: Number(ds(line.regenBase, '0')),
                         regenFactor: Number(ds(line.regenFactor, '0')),
-                        color: ds(line.color, "#000000")
+                        color: ds(line.color, "#000000"),
+                        initialUMaxStacks: Number(ds(line.initialUMaxStacks, '0')),
+                        initialUTransferSpeed: Number(ds(line.initialUTransferSpeed, '0')),
+                        env: ds(line.env, 'false') === 'true'
                     };
 
                     town.resources.resourceData.set(line.type, data);

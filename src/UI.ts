@@ -40,9 +40,9 @@ export class UI
 
     public Init()
     {
-        this.town.archetypes.resources.onEntityAdded.add((e) =>
+        this.town.resources.onResourceAdded.add((i) =>
         {
-            if (!this.resourcePanels.has(e.id))
+            if (!this.resourcePanels.has(i.type))
             {
                 let elem = (this.resourceTemplate.content.cloneNode(true) as HTMLElement).querySelector("div");
                 elem.classList.add('resource');
@@ -56,8 +56,8 @@ export class UI
                     stack: elem.querySelector("#stack") as HTMLElement,
                     regen: elem.querySelector("#regen") as HTMLElement,
                 }
-                this.resourcePanels.set(e.id, resourcePanel);
-                resourcePanel.name.innerHTML = `${L(e.id)}`;
+                this.resourcePanels.set(i.type, resourcePanel);
+                resourcePanel.name.innerHTML = `${L('r' + i.type)}`;
             }
         })
 
@@ -141,35 +141,27 @@ export class UI
 
     public sUpdateResources()
     {
-        for (const entity of this.town.archetypes.resources)
+        for (const info of this.town.resources.resourceMap.values())
         {
-            let elem = this.resourcePanels.get(entity.id);
+            let elem = this.resourcePanels.get(info.type);
 
-            // TODO: Update numbers only (seperate divs)
-            if ('resourceInfo' in entity)
+            if (info.max > 0)
             {
-                if (entity.resourceInfo.max > 0)
-                {
-                    elem.stack.innerHTML = `${entity.resourceInfo.current} / ${entity.resourceInfo.max}`;
-                }
-                else
-                {
-                    elem.stack.innerHTML = `${entity.resourceInfo.current}`;
-                }
-
-                if (entity.resourceInfo.tickModify != 0)
-                {
-                    let n = entity.resourceInfo.tickModify;
-                    elem.regen.innerHTML = `${(n < 0 ? "" : "+") + n.toFixed(2)} / tick`
-                }
-                else
-                {
-                    elem.regen.innerHTML = "";
-                }
+                elem.stack.innerHTML = `${info.current.toFixed(0)} / ${info.max.toFixed(0)}`;
             }
             else
             {
+                elem.stack.innerHTML = `${info.current.toFixed(0)}`;
+            }
 
+            if (Math.abs(info.tickModify) > 1e-8)
+            {
+                let n = info.tickModify;
+                elem.regen.innerHTML = `${(n < 0 ? "" : "+") + n.toFixed(4)} / ${L('tick')}`;
+            }
+            else
+            {
+                elem.regen.innerHTML = "";
             }
         }
     }
