@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "ResourceData": {
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "env": {
+                    "type": "boolean"
+                },
+                "initialMaxStacks": {
+                    "type": "number"
+                },
+                "initialUMaxStacks": {
+                    "type": "number"
+                },
+                "initialUTransferSpeed": {
+                    "type": "number"
+                },
+                "regenBase": {
+                    "type": "number"
+                },
+                "regenFactor": {
+                    "type": "number"
+                },
+                "type": {
+                    "$ref": "#/definitions/ResourceType"
+                }
+            },
+            "type": "object"
+        },
+        "ResourceType": {
+            "enum": [
+                "Branch",
+                "Culture",
+                "Fruit",
+                "Grass",
+                "Oak",
+                "Picea",
+                "Shrub",
+                "Wood"
+            ],
+            "type": "string"
+        }
+    },
+    "properties": {
+        "Branch": {
+            "$ref": "#/definitions/ResourceData"
+        },
+        "Culture": {
+            "$ref": "#/definitions/ResourceData"
+        },
+        "Fruit": {
+            "$ref": "#/definitions/ResourceData"
+        },
+        "Grass": {
+            "$ref": "#/definitions/ResourceData"
+        },
+        "Oak": {
+            "$ref": "#/definitions/ResourceData"
+        },
+        "Picea": {
+            "$ref": "#/definitions/ResourceData"
+        },
+        "Shrub": {
+            "$ref": "#/definitions/ResourceData"
+        },
+        "Wood": {
+            "$ref": "#/definitions/ResourceData"
+        }
+    },
+    "type": "object"
+}
+

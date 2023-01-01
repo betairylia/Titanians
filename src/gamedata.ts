@@ -2,6 +2,10 @@ import { ResourceType, ResourceTypes } from "./resource";
 import { Town } from "./town";
 import { parse as parseCSV } from "papaparse";
 
+import { resourceData } from "./data/resourceData";
+import { BuildingType } from "./building";
+import { Entity } from "./entity";
+
 function LoadFile(path: string)
 {
     return new Promise<string>((res, rej) =>
@@ -17,17 +21,63 @@ function LoadFile(path: string)
     })   
 }
 
+//////////////////////////////////////////////////////////////////////////
+
 export interface ResourceData
 {
-    type: ResourceType,
-    initialMaxStacks: number,
-    regenBase: number,
-    regenFactor: number,
-    color: string,
-    initialUMaxStacks: number,
-    initialUTransferSpeed: number,
-    env: boolean,
+    type?: ResourceType,
+    initialMaxStacks?: number,
+    regenBase?: number,
+    regenFactor?: number,
+    color?: string,
+    initialUMaxStacks?: number,
+    initialUTransferSpeed?: number,
+    
+    env?: boolean,
 }
+export type ResourceDataSheet = Record<ResourceType, ResourceData>;
+
+const resourceDataDefaults: ResourceData = {
+    initialMaxStacks: 0,
+    regenBase: 0,
+    regenFactor: 0,
+    color: "#000000",
+    initialUMaxStacks: 0,
+    initialUTransferSpeed: 0,
+    env: false
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+export interface BuildingData
+{
+    // How much will the building cost?
+    buildCost?: {
+        type: ResourceType,
+        base: number,
+
+        // Actual cost = base * pow(growth, #buildings)
+        growth?: number,
+    }[],
+    growthAll?: number,
+
+    // When will this building be visible?
+    visibleRequirements?: {
+        type: ResourceType
+    }[] | false,
+
+    prototype?: Entity,
+}
+export type BuildingDataSheet = Record<BuildingType, BuildingData>;
+
+const BuildingDataDefaults: BuildingData = {
+    buildCost: [],
+    growthAll: 1.5,
+    visibleRequirements: [],
+    prototype: {id: "UNKNOWN"}
+}
+
+//////////////////////////////////////////////////////////////////////////
 
 function ds(s: string, def: string)
 {
@@ -38,28 +88,75 @@ export function LoadAllData(town: Town)
 {
     return new Promise<void>((resolve, reject) =>
     {
-        LoadFile("data/Resource.csv").then((csv) =>
+        Promise.all([
+            LoadFile("data/resources.json"),
+            LoadFile("data/buildings.json"),
+        ]).then((parsedJSON) =>
         {
-            let data = parseCSV<any>(csv, {
-                header: true,
-            });
-            for (const line of data.data.slice(2))
-            {
-                if ((line.type in ResourceTypes))
-                {
-                    let data: ResourceData = {
-                        type: line.type,
-                        initialMaxStacks: Number(ds(line.initialMaxStacks, '0')),
-                        regenBase: Number(ds(line.regenBase, '0')),
-                        regenFactor: Number(ds(line.regenFactor, '0')),
-                        color: ds(line.color, "#000000"),
-                        initialUMaxStacks: Number(ds(line.initialUMaxStacks, '0')),
-                        initialUTransferSpeed: Number(ds(line.initialUTransferSpeed, '0')),
-                        env: ds(line.env, 'false') === 'true'
-                    };
+            ////////////////////////////////////////////////
+            // Resources
 
-                    town.resources.resourceData.set(line.type, data);
-                    console.log(data);
+            {
+                let resourceJSON = parsedJSON[0];
+
+                let obj: ResourceDataSheet = JSON.parse(resourceJSON);
+                if (obj.hasOwnProperty("$schema"))
+                {
+                    delete (obj as any)["$schema"];
+                }
+
+                for (const type in obj)
+                {
+                    console.log(type);
+                    let line = obj[type as ResourceType];
+                    let newData: ResourceData = { type: type as ResourceType };
+                
+                    Object.assign(newData, resourceDataDefaults);
+                    Object.assign(newData, line);
+
+                    town.resources.resourceData.set(type as ResourceType, newData);
+                    console.log(newData);
+                }
+            }
+
+            ////////////////////////////////////////////////
+            // Buildings
+
+            {
+                let buildingJSON = parsedJSON[1];
+                let obj: BuildingDataSheet = JSON.parse(buildingJSON);
+                if (obj.hasOwnProperty("$schema"))
+                {
+                    delete (obj as any)["$schema"];
+                }
+
+                for (const type in obj)
+                {
+                    console.log(type);
+                    let line = obj[type as BuildingType];
+                    let newData: BuildingData = {};
+                
+                    Object.assign(newData, BuildingDataDefaults);
+                    Object.assign(newData, line);
+
+                    // Fill cost
+                    newData.buildCost.forEach((x) =>
+                    {
+                        if (typeof x.growth === 'undefined') { x.growth = newData.growthAll; }
+                    });
+
+                    // Fill prototype
+                    if (!newData.prototype.hasOwnProperty(type))
+                    {
+                        (newData.prototype as any)[type] = {};
+                    }
+                    if (!newData.prototype.hasOwnProperty("id") || newData.prototype.id === "UNKNOWN")
+                    {
+                        newData.prototype.id = "b" + type;
+                    }
+
+                    town.buildings.data.set(type as BuildingType, newData);
+                    console.log(newData);
                 }
             }
 

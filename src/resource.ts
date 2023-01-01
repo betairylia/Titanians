@@ -19,7 +19,11 @@ export type ResourceInfo = {
     type: ResourceType,
     current: number,
     max: number,
-    tickModify: number
+
+    tickModify: number,
+    tickModifyEnvHint?: number,
+
+    visible: boolean
 }
 
 export type EnvironmentInfo = {
@@ -36,6 +40,9 @@ export const ResourceTypes =
 
     "Fruit": 0,
     "Wood": 0,
+    "Branch": 0,
+
+    "Culture": 0,
 }
 export type ResourceType = keyof typeof ResourceTypes;
 
@@ -46,6 +53,7 @@ export class ResourceHolder
     public resourceData: Map<ResourceType, ResourceData> = new Map<ResourceType, ResourceData>();
     
     resourceMap: Map<ResourceType, ResourceInfo> = new Map<ResourceType, ResourceInfo>();
+    resourceMapEnv: Map<ResourceType, ResourceInfo> = new Map<ResourceType, ResourceInfo>();
     static resourceMapUniversal: Map<ResourceType, ResourceInfo> = new Map<ResourceType, ResourceInfo>();
 
     public environment: EnvironmentInfo = {
@@ -61,6 +69,14 @@ export class ResourceHolder
         this.town = town;
     }
 
+    public Init()
+    {
+        (Object.keys(ResourceTypes) as Array<ResourceType>).forEach((type) =>
+        {
+            this.AddResourceEntry(type);
+        })
+    }
+
     private AddResourceEntry(
         type: ResourceType,
     )
@@ -73,9 +89,16 @@ export class ResourceHolder
                 type: type,
                 current: 0,
                 max: max,
-                tickModify: 0
+                tickModify: 0,
+
+                visible: false
             };
             this.resourceMap.set(type, info);
+            
+            if (this.resourceData.get(type).env === true)
+            {
+                this.resourceMapEnv.set(type, info);
+            }
 
             // Also creates universal info if not presented
             if (!ResourceHolder.resourceMapUniversal.has(type))
@@ -86,7 +109,9 @@ export class ResourceHolder
                     type: type,
                     current: 0,
                     max: max,
-                    tickModify: 0
+                    tickModify: 0,
+
+                    visible: false
                 };
                 ResourceHolder.resourceMapUniversal.set(type, info);
             }
@@ -105,6 +130,19 @@ export class ResourceHolder
         return amount <= res.current;
     }
 
+    public IsAllResourceEnough(
+        resources: {type: ResourceType, amount: number}[]
+    )
+    {
+        for (const line of resources)
+        {
+            // If no enough resources, return NO
+            if (this.GetResourceAmount(line.type) < line.amount) { return false; }
+        }
+
+        return true;
+    }
+
     // Returns: % of final added resource (w.r.t. amount)
     public AddResource(
         type: ResourceType,
@@ -118,6 +156,7 @@ export class ResourceHolder
         }
 
         let info = this.resourceMap.get(type);
+        info.visible = true;
         
         // We are using resource; we may need to use universal resources.
         if (amount < 0)
@@ -142,11 +181,9 @@ export class ResourceHolder
         
         if (this.resourceData.get(type).env === true)
         {
-            this.environment.amount += amount;
-            if (this.environment.amount > this.environment.capacity)
+            if (tick === false)
             {
-                info.current -= (this.environment.amount - this.environment.capacity);
-                this.environment.amount = this.environment.capacity;
+                console.error("Environment resource is modified without `tick == true`!! Doing so will break environment constraints ...");
             }
         }
 
@@ -182,7 +219,9 @@ export class ResourceHolder
                     type: type,
                     current: uInfo.current + lInfo.current,
                     max: uInfo.max + lInfo.max,
-                    tickModify: lInfo.tickModify
+                    tickModify: lInfo.tickModify,
+                    tickModifyEnvHint: lInfo.tickModifyEnvHint,
+                    visible: lInfo.visible || uInfo.visible
                 };
             }
             // No universal data, why tho?
@@ -204,6 +243,24 @@ export class ResourceHolder
         return 0;
     }
 
+    public SetupEnvironment()
+    {
+        this.environment.amount = 0;
+        for (const info of this.resourceMapEnv.values())
+        {
+            let data = this.resourceData.get(info.type);
+            if (data.env === true)
+            {
+                this.environment.amount += info.current;
+            }
+        }
+
+        if (this.environment.amount > this.environment.capacity)
+        {
+            console.warn("Env amount > capacity. Auto-rebalance not implemented. TODO: implement this.");
+        }
+    }
+
     ///////////////////////////////////////////////
     // Resource systems
 
@@ -219,7 +276,53 @@ export class ResourceHolder
                 let data = this.resourceData.get(type);
                 let regenAmount = data.regenBase + data.regenFactor * info.current;
 
-                this.AddResource(info.type, regenAmount);
+                if (regenAmount > 1e-5)
+                {
+                    this.AddResource(info.type, regenAmount);
+                }
+            }
+        }
+    }
+
+    public sUpdateEnvTickHint()
+    {
+        for (const info of this.resourceMapEnv.values())
+        {
+            // Update tickModify hints for UI
+            info.tickModifyEnvHint = info.tickModify;
+        }
+    }
+
+    public sAdjustEnvironment()
+    {
+        let totalInc = 0, totalDec = 0;
+        for (const info of this.resourceMapEnv.values())
+        {
+            // Collect all tickModify's
+            if (info.tickModify > 0)
+            {
+                totalInc += info.tickModify;
+            }
+            else
+            {
+                totalDec += - info.tickModify;
+            }
+        }
+
+        let inc = totalInc;
+        if (this.environment.amount - totalDec + totalInc > this.environment.capacity)
+        {
+            inc = this.environment.capacity - this.environment.amount + totalDec;
+        }
+
+        let reducement = 1 - (inc / totalInc);
+        for (const info of this.resourceMapEnv.values())
+        {
+            // Collect all tickModify's
+            if (info.tickModify > 0)
+            {
+                info.current -= info.tickModify * reducement;
+                info.tickModify -= info.tickModify * reducement;
             }
         }
     }

@@ -4,6 +4,7 @@ import { ResourceType } from "./resource"
 import { Town } from "./town"
 import { AddActivityEntry, activities } from "./activity";
 import { BuildingInfoPanel } from "./UI";
+import { BuildingData } from "./gamedata";
 
 export type Building = {
     isBuilding?: true,
@@ -20,6 +21,7 @@ export const BuildingTypesDef = {
     Plantation: {},
     Farm: {},
     LoggingCamp: {},
+    Bonfire: {},
 }
 export type BuildingType = keyof typeof BuildingTypesDef;
 
@@ -27,6 +29,7 @@ export class BuildingHelper
 {
     public town: Town;
     public archetypes: Partial<Record<BuildingType, ArchetypeBucket<With<Entity, "isBuilding" | BuildingType>>>> = {};
+    public data: Map<BuildingType, BuildingData> = new Map<BuildingType, BuildingData>();
 
     constructor(town: Town)
     {
@@ -73,19 +76,37 @@ export class BuildingHelper
 
     public GetBuildingPrototype(type: BuildingType)
     {
-        return BuildingHelper.buildings[type];
+        return this.data.get(type).prototype;
     }
 
     public GetBuildingCost(type: BuildingType): {type: ResourceType, amount: number}[]
     {
-        return [];
-        // return [{ type: "Wood", amount: 5 }];
+        let nBuildings = this.archetypes[type].size;
+        let baseCost = this.data.get(type).buildCost;
+        return baseCost.map((bc) =>
+        {
+            return { type: bc.type, amount: bc.base * Math.pow(bc.growth, nBuildings) };
+        });
     }
 
     public IsBuildingUnlocked(type: BuildingType): boolean
     {
-        // TODO: FIXME: Test only
-        return this.town.resources.GetResourceAmount("Fruit") >= 10;
+        let condition = this.data.get(type).visibleRequirements;
+        let result = true;
+        
+        if (condition != false)
+        {
+            condition.forEach(x =>
+                {
+                    result = result && this.town.resources.GetResource(x.type).visible;
+                });
+        }
+        else
+        {
+            return condition;
+        }
+
+        return result;
     }
 
     ///////////////////////////////////////////////
@@ -95,52 +116,35 @@ export class BuildingHelper
     {
         for (const entity of this.town.archetypes.resourceBuildings)
         {
-            // TODO: Handle overflow etc.
-            let shouldBreak = false;
+            // Check if conditions met (enough inputs and output spaces)
+            let minPercentage = 1.0;
 
             // Handle requirements
             for (const line of entity.ChangeResourcePerTick.requires)
             {
-                let result = this.town.resources.AddResource(line.type, -line.amount);
-                if (result < (1 - 1e-7)) { shouldBreak = true; break; }
+                minPercentage = Math.min(minPercentage, this.town.resources.GetResourceAmount(line.type) / (line.amount));
             }
-
-            if (shouldBreak) { break; }
 
             // Handle products
             for (const line of entity.ChangeResourcePerTick.products)
             {
-                let result = this.town.resources.AddResource(line.type, line.amount);
-                if (result < (1 - 1e-7)) { shouldBreak = true; }
+                let res = this.town.resources.GetResource(line.type);
+                minPercentage = Math.min(minPercentage, (res.max - res.current) / (line.amount));
             }
-         
-            if (shouldBreak) { break; }
-        }
-    }
 
-    ///////////////////////////////////////////////
-    // Building definition / prefabs
+            if (minPercentage <= 1e-5) { continue; }
 
-    static buildings:Record<BuildingType, Entity> = {
-        "Plantation": {
-            id: "bPlantation",
-            ChangeResourcePerTick: {
-                requires: [],
-                products: [{ type: "Fruit", amount: 1.0 }]
-            },
-            Plantation: {}
-        },
-        "Farm": {
-            id: "bFarm",
-            Farm: {}
-        },
-        "LoggingCamp": {
-            id: "bLoggingCamp",
-            ChangeResourcePerTick: {
-                requires: [{ type: "Oak", amount: 0.02 }],
-                products: [{ type: "Wood", amount: 0.15 }]
-            },
-            LoggingCamp: {},
+            // Consume requirements
+            for (const line of entity.ChangeResourcePerTick.requires)
+            {
+                this.town.resources.AddResource(line.type, -line.amount * minPercentage);
+            }
+
+            // Produce products
+            for (const line of entity.ChangeResourcePerTick.products)
+            {
+                this.town.resources.AddResource(line.type, line.amount * minPercentage);
+            }
         }
     }
 }

@@ -36,16 +36,20 @@ export class Town
             LoadAllData(this).then(() =>
             {
                 this.ui.Init();
+                this.resources.Init();
                 this.buildings.Init();
         
-                this.resources.AddResource("Fruit", 10, false);
+                // this.resources.AddResource("Fruit", 10, false);
 
                 this.resources.AddResource("Oak", 250, false);
                 this.resources.AddResource("Picea", 5, false);
                 this.resources.AddResource("Grass", 545, false);
                 this.resources.AddResource("Shrub", 200, false);
+
+                this.resources.SetupEnvironment();
         
                 AddActivityEntry(this.world, activities.GatherFruit);
+                AddActivityEntry(this.world, activities.GatherBranch);
                 resolve();
             })
         })
@@ -64,6 +68,9 @@ export class Town
         this.buildings.sModifyResources();
         
         this.resources.sTransferUniversalResource();
+
+        this.resources.sUpdateEnvTickHint();
+        this.resources.sAdjustEnvironment();
 
         this.UpdateUI();
     }

@@ -1,0 +1,93 @@
+{
+    "$schema": "buildings-schema.json",
+    "Plantation": {
+        "buildCost": [
+            {
+                "type": "Wood",
+                "base": 10
+            },
+            {
+                "type": "Fruit",
+                "base": 5,
+                "growth": 1
+            }
+        ],
+        "visibleRequirements": [
+            {
+                "type": "Fruit"
+            }
+        ],
+        "prototype": {
+            "ChangeResourcePerTick": {
+                "requires": [],
+                "products": [
+                    {
+                        "type": "Fruit",
+                        "amount": 1
+                    }
+                ]
+            }
+        }
+    },
+    "Farm": {
+        "visibleRequirements": false
+    },
+    "LoggingCamp": {
+        "buildCost": [
+            {
+                "type": "Culture",
+                "base": 5
+            }
+        ],
+        "visibleRequirements": [
+            {
+                "type": "Culture"
+            }
+        ],
+        "prototype": {
+            "ChangeResourcePerTick": {
+                "requires": [
+                    {
+                        "type": "Oak",
+                        "amount": 0.02
+                    }
+                ],
+                "products": [
+                    {
+                        "type": "Wood",
+                        "amount": 0.15
+                    }
+                ]
+            }
+        }
+    },
+    "Bonfire": {
+        "buildCost": [
+            {
+                "type": "Branch",
+                "base": 10
+            }
+        ],
+        "visibleRequirements": [
+            {
+                "type": "Branch"
+            }
+        ],
+        "prototype": {
+            "ChangeResourcePerTick": {
+                "requires": [
+                    {
+                        "type": "Branch",
+                        "amount": 0.02
+                    }
+                ],
+                "products": [
+                    {
+                        "type": "Culture",
+                        "amount": 1
+                    }
+                ]
+            }
+        }
+    }
+}

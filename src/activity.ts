@@ -80,10 +80,10 @@ function UseResourceOnce(act: Entity, town: Town)
     // First check if resources are enough
     if (act.hasOwnProperty("UseResourceOnce"))
     {
-        for (const line of act.UseResourceOnce)
+        if (!town.resources.IsAllResourceEnough(act.UseResourceOnce))
         {
             // If no enough resources, abort this action
-            if (town.resources.GetResource(line.type).current < line.amount) { return false; }
+            return false;
         }
     }
 
@@ -121,5 +121,9 @@ export const activities = {
     GatherFruit: {
         id: "aGatherFruit",
         AddResourceOnce: [{ type: "Fruit", amount: 1.0 }],
-    } 
+    },
+    GatherBranch: {
+        id: "aGatherBranch",
+        AddResourceOnce: [{ type: "Branch", amount: 1.0 }],
+    }
 } satisfies Record<string, Entity>

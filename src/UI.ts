@@ -1,6 +1,7 @@
 import { Town } from "./town";
 import { getStrings as L } from "./i18n/i18n";
 import { HandleActivity } from "./activity";
+import { BuildingType } from "./building";
 
 export interface BuildingInfoPanel
 {
@@ -20,9 +21,10 @@ export interface ResourceInfoPanel
 
 export class UI
 {
-    resourceDiv = document.querySelector("#resources");
+    artResourceDiv = document.querySelector("#resources #artResources");
+    envResourceDiv = document.querySelector("#resources #envResources");
     resourcePanels: Map<string, ResourceInfoPanel> = new Map<string, ResourceInfoPanel>();
-    resourceTemplate: HTMLTemplateElement = this.resourceDiv.querySelector("template");
+    resourceTemplate: HTMLTemplateElement = document.querySelector("#resources").querySelector("template");
 
     activityDiv = document.querySelector("#activities");
     activityButtons: Map<string, HTMLButtonElement> = new Map<string, HTMLButtonElement>();
@@ -30,6 +32,8 @@ export class UI
     buildingInfoDiv = document.querySelector("#buildings");
     buildingInfoPanels: Map<string, BuildingInfoPanel> = new Map<string, BuildingInfoPanel>();
     buildingInfoTemplate: HTMLTemplateElement = this.buildingInfoDiv.querySelector("template");
+
+    tooltipDiv = document.querySelector("#tooltip");
 
     town: Town;
 
@@ -46,7 +50,16 @@ export class UI
             {
                 let elem = (this.resourceTemplate.content.cloneNode(true) as HTMLElement).querySelector("div");
                 elem.classList.add('resource');
-                this.resourceDiv.appendChild(elem);
+
+                let rData = this.town.resources.resourceData.get(i.type);
+                if (rData.env === true)
+                {
+                    this.envResourceDiv.appendChild(elem);
+                }
+                else
+                {
+                    this.artResourceDiv.appendChild(elem);
+                }
 
                 // console.log(`Added Resource ${e.id}`);
 
@@ -56,6 +69,7 @@ export class UI
                     stack: elem.querySelector("#stack") as HTMLElement,
                     regen: elem.querySelector("#regen") as HTMLElement,
                 }
+
                 this.resourcePanels.set(i.type, resourcePanel);
                 resourcePanel.name.innerHTML = `${L('r' + i.type)}`;
             }
@@ -96,7 +110,20 @@ export class UI
                 };
 
                 // TODO: If can construct
-                panel.constructBtn.onclick = (event) => { HandleActivity(e, this.town); }
+                panel.constructBtn.onclick = (event) =>
+                {
+                    HandleActivity(e, this.town);
+                    this.ShowBuildingTooltip(e.buildingInfo.type);
+                }
+                panel.constructBtn.onpointerenter = (event) =>
+                {
+                    this.ShowBuildingTooltip(e.buildingInfo.type);
+                }
+                panel.constructBtn.onpointerleave = (event) =>
+                {
+                    this.HideTooltip();
+                }
+
                 panel.name.innerHTML = L('b' + e.buildingInfo.type);
                 panel.count.innerHTML = "0";
 
@@ -133,6 +160,31 @@ export class UI
         })
     }
 
+    ////////////////////////////////////////////////////////
+    // Tooltips
+
+    public ShowTooltip(tip: string)
+    {
+        this.tooltipDiv.innerHTML = tip;
+    }
+
+    public HideTooltip()
+    {
+        this.tooltipDiv.innerHTML = "";
+    }
+
+    public ShowBuildingTooltip(type: BuildingType)
+    {
+        let tip = "";
+        let cost = this.town.buildings.GetBuildingCost(type);
+        cost.forEach((x) =>
+        {
+            tip += `${L('r' + x.type)} x${x.amount.toFixed(2)}<br/>`;
+        });
+
+        this.ShowTooltip(tip);
+    }
+
     public Update()
     {
         this.sUpdateResources();
@@ -147,21 +199,34 @@ export class UI
 
             if (info.max > 0)
             {
-                elem.stack.innerHTML = `${info.current.toFixed(0)} / ${info.max.toFixed(0)}`;
+                elem.stack.innerHTML = `${info.current.toFixed(2)} / ${info.max.toFixed(0)}`;
             }
             else
             {
-                elem.stack.innerHTML = `${info.current.toFixed(0)}`;
+                elem.stack.innerHTML = `${info.current.toFixed(2)}`;
             }
 
-            if (Math.abs(info.tickModify) > 1e-8)
+            let tickMod = info.tickModifyEnvHint;
+            if (typeof tickMod === 'undefined') { tickMod = info.tickModify; }
+
+            if (Math.abs(tickMod) > 1e-8)
             {
-                let n = info.tickModify;
+                let n = tickMod;
                 elem.regen.innerHTML = `${(n < 0 ? "" : "+") + n.toFixed(4)} / ${L('tick')}`;
             }
             else
             {
                 elem.regen.innerHTML = "";
+            }
+
+            // Toggle visibility
+            if (info.visible === false)
+            {
+                elem.container.style.display = 'none';
+            }
+            else
+            {
+                elem.container.style.display = 'flex';
             }
         }
     }
@@ -181,6 +246,19 @@ export class UI
             // {
             //     this.town.world.addComponent(entity, "hidden", true);
             // }
+
+            // Check if can be constructed
+            if (
+                this.town.resources.IsAllResourceEnough(
+                    this.town.buildings.GetBuildingCost(entity.buildingInfo.type)
+            ))
+            {
+                entity.buildingInfo.ui.constructBtn.disabled = false;
+            }
+            else
+            {
+                entity.buildingInfo.ui.constructBtn.disabled = true;
+            }
         }
         
         // TODO: Remove buttons if activity has been removed

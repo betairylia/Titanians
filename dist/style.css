@@ -46,6 +46,13 @@ div.horizonalFlex{
     align-items: center;
 }
 
+div.verticalFlex{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .leftColumn{
     flex-grow: 0;
     width:15%;

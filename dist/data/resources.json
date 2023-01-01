@@ -1,0 +1,32 @@
+{
+    "$schema": "resources-schema.json",
+    "Grass": {
+        "env": true,
+        "regenFactor": 0.0002
+    },
+    "Shrub": {
+        "env": true,
+        "regenFactor": 0.00013
+    },
+    "Oak": {
+        "env": true,
+        "regenFactor": 0.00008
+    },
+    "Picea": {
+        "env": true,
+        "regenFactor": 0.000005
+    },
+    "Fruit": {
+        "initialMaxStacks": 1000,
+        "initialUTransferSpeed": 0.05
+    },
+    "Wood": {
+        "initialMaxStacks": 20
+    },
+    "Branch": {
+        "initialMaxStacks": 100
+    },
+    "Culture": {
+        "initialMaxStacks": 5000
+    }
+}

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Hello, world!</title>
+  <title>Celestine Labyrinth</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="" />
@@ -30,7 +30,7 @@
 
 </head>
 <!-- 
-  To start, type `tsc` in console at root for watch + compile.
+  To start, type `npm run start` in console at root for watch + compile.
   (which contains tsconfig.json)
 -->
 <body>
@@ -63,6 +63,8 @@
         </span>
       </div>
     </template>
+    <div id="envResources" style="margin-bottom: 1em;"></div>
+    <div id="artResources"></div>
   </div>
   <hr/>
   <h2>Buildings</h2>
@@ -81,6 +83,9 @@
   </div>
   <hr/>
   <h2>Activities</h2>
-  <div id="activities"></div>
+  <div id="activities" class="verticalFlex" 
+  style="align-items: flex-start;"></div>
+  <hr/>
+  <div id="tooltip"></div>
 </body>
 </html>
