@@ -41,3 +41,5 @@ Thumbs.db
 yarn.lock
 
 ~$All.xlsm
+
+.vscode/
