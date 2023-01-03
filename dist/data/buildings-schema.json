@@ -202,9 +202,15 @@
         },
         "BuildingType": {
             "enum": [
+                "Academy",
+                "Atelier",
                 "Bonfire",
                 "Farm",
+                "ForestKeeper",
+                "Guild",
+                "House",
                 "LoggingCamp",
+                "Mine",
                 "Plantation"
             ],
             "type": "string"
@@ -1777,7 +1783,7 @@
                     "type": "object"
                 },
                 {
-                    "$ref": "#/definitions/Partial<{Plantation:{};Farm:{};LoggingCamp:{};Bonfire:{};}>"
+                    "$ref": "#/definitions/Partial<{Plantation:{};Farm:{};LoggingCamp:{};ForestKeeper:{};Bonfire:{};House:{};Guild:{};Atelier:{};Academy:{};Mine:{};}>"
                 },
                 {
                     "properties": {
@@ -9610,15 +9616,33 @@
             },
             "type": "object"
         },
-        "Partial<{Plantation:{};Farm:{};LoggingCamp:{};Bonfire:{};}>": {
+        "Partial<{Plantation:{};Farm:{};LoggingCamp:{};ForestKeeper:{};Bonfire:{};House:{};Guild:{};Atelier:{};Academy:{};Mine:{};}>": {
             "properties": {
+                "Academy": {
+                    "type": "object"
+                },
+                "Atelier": {
+                    "type": "object"
+                },
                 "Bonfire": {
                     "type": "object"
                 },
                 "Farm": {
                     "type": "object"
                 },
+                "ForestKeeper": {
+                    "type": "object"
+                },
+                "Guild": {
+                    "type": "object"
+                },
+                "House": {
+                    "type": "object"
+                },
                 "LoggingCamp": {
+                    "type": "object"
+                },
+                "Mine": {
                     "type": "object"
                 },
                 "Plantation": {
@@ -9887,6 +9911,7 @@
                 "Grass",
                 "Oak",
                 "Picea",
+                "Science",
                 "Shrub",
                 "Wood"
             ],
@@ -12469,13 +12494,31 @@
         }
     },
     "properties": {
+        "Academy": {
+            "$ref": "#/definitions/BuildingData"
+        },
+        "Atelier": {
+            "$ref": "#/definitions/BuildingData"
+        },
         "Bonfire": {
             "$ref": "#/definitions/BuildingData"
         },
         "Farm": {
             "$ref": "#/definitions/BuildingData"
         },
+        "ForestKeeper": {
+            "$ref": "#/definitions/BuildingData"
+        },
+        "Guild": {
+            "$ref": "#/definitions/BuildingData"
+        },
+        "House": {
+            "$ref": "#/definitions/BuildingData"
+        },
         "LoggingCamp": {
+            "$ref": "#/definitions/BuildingData"
+        },
+        "Mine": {
             "$ref": "#/definitions/BuildingData"
         },
         "Plantation": {

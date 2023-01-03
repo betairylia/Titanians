@@ -2,7 +2,6 @@ import { ResourceType, ResourceTypes } from "./resource";
 import { Town } from "./town";
 import { parse as parseCSV } from "papaparse";
 
-import { resourceData } from "./data/resourceData";
 import { BuildingType } from "./building";
 import { Entity } from "./entity";
 
@@ -107,15 +106,14 @@ export function LoadAllData(town: Town)
 
                 for (const type in obj)
                 {
-                    console.log(type);
                     let line = obj[type as ResourceType];
                     let newData: ResourceData = { type: type as ResourceType };
                 
-                    Object.assign(newData, resourceDataDefaults);
-                    Object.assign(newData, line);
+                    Object.assign(newData, structuredClone(resourceDataDefaults));
+                    Object.assign(newData, structuredClone(line));
 
                     town.resources.resourceData.set(type as ResourceType, newData);
-                    console.log(newData);
+                    console.log(`Read resource data of ${type}:`, newData);
                 }
             }
 
@@ -132,12 +130,11 @@ export function LoadAllData(town: Town)
 
                 for (const type in obj)
                 {
-                    console.log(type);
                     let line = obj[type as BuildingType];
                     let newData: BuildingData = {};
                 
-                    Object.assign(newData, BuildingDataDefaults);
-                    Object.assign(newData, line);
+                    Object.assign(newData, structuredClone(BuildingDataDefaults));
+                    Object.assign(newData, structuredClone(line));
 
                     // Fill cost
                     newData.buildCost.forEach((x) =>
@@ -156,7 +153,7 @@ export function LoadAllData(town: Town)
                     }
 
                     town.buildings.data.set(type as BuildingType, newData);
-                    console.log(newData);
+                    console.log(`Read buliding data of ${type}:`, newData);
                 }
             }
 

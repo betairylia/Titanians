@@ -43,6 +43,7 @@ export const ResourceTypes =
     "Branch": 0,
 
     "Culture": 0,
+    "Science": 0,
 }
 export type ResourceType = keyof typeof ResourceTypes;
 
@@ -183,7 +184,7 @@ export class ResourceHolder
         {
             if (tick === false)
             {
-                console.error("Environment resource is modified without `tick == true`!! Doing so will break environment constraints ...");
+                console.warn("Environment resource is modified without `tick == true`!! Doing so will break environment constraints ...");
             }
         }
 

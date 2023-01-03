@@ -29,7 +29,15 @@ let strings:Record<string, i18nDictionary> = {
         bPlantation: "种植园",
         bFarm: "农场",
         bLoggingCamp: "伐木场",
+        bForestKeeper: "护林员小屋",
         bBonfire: "篝火堆",
+        bHouse: "木屋",
+        bGuild: "探险工会",
+        bAtelier: "风车工房",
+        bLibrary: "图书馆",
+        bAcademy: "学院",
+        bTheatre: "剧院",
+        bMine: "矿井",
         
         aGatherFruit: "收集一些野果",
         aGatherBranch: "收集一些树枝"

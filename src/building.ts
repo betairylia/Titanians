@@ -21,7 +21,13 @@ export const BuildingTypesDef = {
     Plantation: {},
     Farm: {},
     LoggingCamp: {},
+    ForestKeeper: {},
     Bonfire: {},
+    House: {},
+    Guild: {},
+    Atelier: {},
+    Academy: {},
+    Mine: {}
 }
 export type BuildingType = keyof typeof BuildingTypesDef;
 
@@ -93,7 +99,7 @@ export class BuildingHelper
     {
         let condition = this.data.get(type).visibleRequirements;
         let result = true;
-        
+
         if (condition != false)
         {
             condition.forEach(x =>

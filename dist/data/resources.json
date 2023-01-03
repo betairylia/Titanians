@@ -28,5 +28,8 @@
     },
     "Culture": {
         "initialMaxStacks": 5000
+    },
+    "Science": {
+        "initialMaxStacks": 5000
     }
 }
