@@ -8,3 +8,6 @@ To start development / build, clone the repo, Install [NodeJS](https://nodejs.or
 npm install -i
 npm run start
 ```
+
+## ?
+![roadmap](roadmap.png)
